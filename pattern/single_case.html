@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>单例模式</title>
+</head>
+<body>
+  <script>
+    // 划分命名空间,并将属性和方法组织在一起的一种方式;
+    // 只是实例化一次,每次返回的实例都是同一对象;
+
+    function Singleton(name) {
+      this.name = name;
+    }
+
+    Singleton.prototype.getName = function() {
+      console.log(this.name);
+    }
+
+    // 方法一:
+    function getInstance(name) {
+      // 这里的this指向window
+      if (!this.instance) {
+        this.instance = new Singleton(name)
+      }
+      return this.instance;
+    }
+
+    let a = getInstance('zzx');
+    let b = getInstance('bbq');
+    console.log('a', a);
+    console.log('b', b);
+    console.log(a === b);
+    console.log('==============');
+
+    // 方法二:
+    // 使用闭包返回一个函数
+    let getInstance1 = (function() {
+      let instance;
+      return function(name) {
+        if (!instance) {
+          instance = new Singleton(name)
+        }
+        return instance;     
+      }
+    })();
+    let a1 = getInstance1('zzx');
+    let b1 = getInstance1('bbq');
+    console.log('a1', a1);
+    console.log('b1', b1);
+    console.log(a1 === b1);
+    console.log('==============');
+
+    // 方案三:
+    // 推荐使用
+    // 构造函数上绑定方法
+    Singleton.getInstance2 = function(name) {
+        if (!this.instance) {
+          this.instance = new Singleton(name)
+        }
+        return this.instance; 
+    };
+    let a2 = Singleton.getInstance2('zzx');
+    let b2 = Singleton.getInstance2('bbq');
+    console.log('a2', a2);
+    console.log('b2', b2);
+    console.log(a2 === b2);
+    console.log('==============');
+
+    // 方案四:
+    // 通过new 
+    let SingletonNew = (function() {
+      let instance;
+      return function(name) {
+        if (!instance) {
+          if (new.target !== undefined) {
+            this.name = name;
+            instance = this;
+          } else {
+            throw new Error('必须要实例执行');
+          }
+        }
+        return instance;
+      }
+    })()
+    let a3 = new SingletonNew('zzx');
+    let b3 = new SingletonNew('bbq');
+    console.log('a3', a3);
+    console.log('b3', b3);
+    console.log(a3 === b3);
+    // let a4 = SingletonNew('zzx1');
+    // console.log('a4', a4);
+    console.log('==============');    
+  </script>
+</body>
+</html>

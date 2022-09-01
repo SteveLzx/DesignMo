@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>类数组循环删除首项</title>
+</head>
+<body>
+  <script>
+    // let words = [1, 2, 3, 4]
+    let words = {
+      // 0: 1,
+      1: 2,
+      2: 3,
+      3: 4,
+      length: 3,
+      forEach: Array.prototype.forEach,
+      shift: Array.prototype.shift
+    }
+    // 此时的words相当于[empty, 2, 3, 4]
+
+    words.forEach(item => {
+      console.log(item); // 2
+      if (item == 2) {
+        // 删除首项,就相当于删除了一个空值,返回值就是undefined
+        console.log(words.shift()); // undefined
+      }
+    })
+  </script>
+</body>
+</html>

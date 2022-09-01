@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>责任链</title>
+</head>
+<body>
+  <script>
+    function order500(orderType, isPay, count) {
+      if (orderType === 1 && isPay === true) {
+        console.log('中奖50元');
+      } else {
+        return 'nextSuccesor';
+      }
+    }
+
+    function order200(orderType, isPay, count) {
+      if (orderType === 2 && isPay === true) {
+        console.log('中奖20元');
+      } else {
+        return 'nextSuccesor';
+      }
+    }  
+    
+    function orderNormal(orderType, isPay, count) {
+      if (count > 0) {
+        console.log('中奖10元');
+      } else {
+        console.log('没有优惠');
+      }
+    }    
+
+    var Chain = function(fn) {
+      this.fn = fn;
+      this.successor = null;
+    }
+
+    Chain.prototype.setNextSuccessor = function(successor) {
+      return (this.successor = successor);
+    }
+
+    Chain.prototype.passRequest = function() {
+      let res = this.fn.apply(this, arguments);
+      if (res === 'nextSuccesor') {
+        return (
+          this.successor && 
+          this.successor.passRequest.apply(this.successor, arguments) 
+        )
+      }
+      return res;
+    }
+
+    let chainOrder500 = new Chain(order500);
+    let chainOrder200 = new Chain(order200);
+    let chainOrderNormal = new Chain(orderNormal);
+
+    chainOrder500.setNextSuccessor(chainOrder200);
+    chainOrder200.setNextSuccessor(chainOrderNormal);
+
+    // chainOrder500.passRequest(1, true, 500);
+    // chainOrder500.passRequest(2, true, 100);
+    // chainOrder500.passRequest(1, false, 0);
+    // chainOrder200.passRequest(2, true, 0);
+
+
+    /* 策略模式vs责任链模式 */
+    // 策略模式:
+    let goodsObj = {
+      goods500: function(isPay, count) {
+        if (isPay === true && count > 0) {
+          console.log('购买商品返回100元');
+        } else {
+          this.goods200();
+        }
+      },
+      goods200: function(isPay, count) {
+        if (isPay === true && count > 0) {
+          console.log('购买商品返回50元');
+        } else {
+          this.goodsNormal();
+        }
+      }, 
+      goodsNormal: function(isPay, count) {
+        if (count > 0) {
+          console.log('购买商品返回10元');
+        } else {
+          console.log('没有购买,不返回');
+        }
+      }    
+    }
+    function getGoods(type, isPay, count) {
+      let typeObj = {
+        1: 'goods500',
+        2: 'goods200',
+        3: 'goodsNormal',
+      }
+      return goodsObj[typeObj[type]](isPay, count);
+    }
+    // getGoods(1, true, 500);
+    // getGoods(1, false, 500);
+
+    // 责任链模式:
+    function goods500(type, isPay, count) {
+      if (type === 1 && isPay === true) {
+        console.log('购买商品返回100元');
+      } else {
+        return 'next';
+      }
+    }
+    function goods200(type, isPay, count) {
+      if (type === 2 && isPay === true) {
+        console.log('购买商品返回50元');
+      } else {
+        return 'next';
+      }
+    }
+    function goodsNormal(type, isPay, count) {
+      if (count > 0) {
+        console.log('购买商品返回10元');
+      } else {
+        console.log('没有购买,不返回');
+      }
+    } 
+    
+    class Good {
+      constructor(fn) {
+        this.fn = fn;
+        this.next = null;
+      }
+      // 设置下一步执行函数
+      setNextSuccessor(next) {
+        this.next = next;
+      }
+      // 执行函数
+      passRequest() {
+        // 执行
+        let res = this.fn.apply(this, arguments);
+        if (res === 'next') {
+          return (
+            this.next && 
+            this.next.passRequest.apply(this.next, arguments)
+          );
+        }
+        return res;
+      }
+    }
+
+    // 注册链表
+    let classGoods500 = new Good(goods500);
+    let classGoods200 = new Good(goods200);
+    let classGoodsNormal = new Good(goodsNormal);
+    classGoods500.setNextSuccessor(classGoods200);
+    classGoods200.setNextSuccessor(classGoodsNormal);
+
+    // 调用执行
+    classGoods500.passRequest(1, true, 100);
+    classGoods500.passRequest(1, false, 100);
+  </script>
+</body>
+</html>

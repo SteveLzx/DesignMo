@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>工厂模式</title>
+</head>
+<body>
+  <script>
+    // 简单的工厂模式:
+    // let CreatePerson = function(name, email, password) {
+    //   this.name = name;
+    //   this.email = email;
+    //   this.password = password;
+    // }
+
+    // const zzx = new CreatePerson('zzx', 'qq.com', '123456');
+    // console.log('zzx', zzx);
+
+    // 复杂工厂模式:
+    // 1.父类: 是一个抽象类,不可以直接实例
+    // 2.子类实现自身的实例方法
+
+    let BicycleShop = function(name) {
+      this.name = name;
+      this.method = function() {
+        return this.name;
+      }
+    }
+
+    BicycleShop.prototype = {
+      constructor: BicycleShop,
+      sellBicyle: function() {
+        let bicyle = this.createBicyle();
+        // 调用子类的方法
+        bicyle.a();
+        bicyle.b();
+        return bicyle;
+      }, 
+      createBicyle: function() {
+        throw new Error('父类不能直接实例,需要子类来实例')
+      }
+    }
+
+    function extend(Sub, Sup) {
+      let F = function() {};
+      F.prototype = Sup.prototype;
+      Sub.prototype = new F();
+      Sub.prototype.constructor = Sub;
+      Sub.sup = Sup.prototype;
+    }
+
+    function BicycleChild(name) {
+      BicycleShop.call(this, name);
+    }
+
+    extend(BicycleChild, BicycleShop);
+
+    // 重写父类方法
+    BicycleChild.prototype.createBicyle = function() {
+      let a = function() {
+        console.log('a执行');
+      }
+
+      let b = function() {
+        console.log('b执行');
+      }
+
+      return {
+        a,
+        b
+      }
+    }
+
+    let bicycleChild = new BicycleChild('小米');
+    console.log('bicycleChild', bicycleChild)
+    console.log(bicycleChild.createBicyle())
+    console.log(bicycleChild.sellBicyle())
+
+    let bicycleShop = new BicycleShop('苹果');
+    console.log('bicycleShop', bicycleShop)
+    bicycleShop.createBicyle();
+
+  </script>
+</body>
+</html>

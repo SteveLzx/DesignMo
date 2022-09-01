@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>命令模式</title>
+</head>
+<body>
+  <button id="btn1">按钮1</button>
+  <button id="btn2">按钮2</button>
+  <button id="btn3">按钮3</button>
+  <script>
+    // 绑定触发按钮函数
+    let setCommands = function(button, command) {
+      button.onclick = function() {
+        command.execute();
+      }
+    }
+
+    let MenuBar = {
+      // 刷新菜单的业务逻辑
+      refresh: function() {
+        console.log('刷新');
+      }
+    }
+
+    let SubMenu = {
+      add: function() {
+        console.log('增加子菜单');
+      },
+      del: function() {
+        console.log('删除子菜单');
+      }      
+    }
+
+
+    function RefreshMenuBarCommand(receiver) {
+      return {
+        execute: function() {
+          receiver.refresh();
+        }
+      }
+    }
+
+    function AddSubMenuCommand(receiver) {
+      return {
+        execute: function() {
+          receiver.add();
+        }
+      }
+    }
+    
+    function DelSubMenuCommand(receiver) {
+      return {
+        execute: function() {
+          receiver.del();
+        }
+      }
+    }    
+
+    const btn1 = document.querySelector('#btn1');
+    const btn2 = document.querySelector('#btn2');
+    const btn3 = document.querySelector('#btn3');
+
+    setCommands(btn1, RefreshMenuBarCommand(MenuBar));
+    setCommands(btn2, AddSubMenuCommand(SubMenu));
+    setCommands(btn3, DelSubMenuCommand(SubMenu));
+  </script>
+</body>
+</html>

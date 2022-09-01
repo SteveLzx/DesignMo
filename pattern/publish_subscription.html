@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>发布订阅模式</title>
+</head>
+<body>
+  <script>
+    // 类的方式实现：
+    class Event {
+      constructor() {
+        // 实例监听数组
+        this.clientList = [];
+      }
+      // 监听方法
+      listen(key, fn) {
+        if (!this.clientList[key]) {
+          this.clientList[key] = [];
+        }
+        this.clientList[key].push(fn);
+      }
+      // 触发方法
+      triggen() {
+        let key = Array.prototype.shift.call(arguments);
+        let fns = this.clientList[key];
+        for(let i = 0; i < fns.length; i++) {
+          fns[i].apply(this, arguments)
+        }
+      }
+    }
+
+    class BuyEvent extends Event {
+      constructor() {
+        super();
+      }
+    }
+    let a = new BuyEvent();
+
+    a.listen('a', function() {
+      console.log('here');
+    });
+
+    a.listen('b', function() {
+      console.log('123');
+    });
+
+    a.listen('c', function() {
+      console.log('abc');
+    });
+
+    a.triggen('a');
+    a.triggen('b');
+  </script>
+</body>
+</html>

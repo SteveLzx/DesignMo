@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>策略模式</title>
+</head>
+<body>
+  <script>
+    // 方案一:
+    let calculateBonus = function(performanceLevel, salary) {
+      if (performanceLevel === 'S') {
+        return salary * 4;
+      }
+      if (performanceLevel === 'A') {
+        return salary * 3;
+      }
+      if (performanceLevel === 'B') {
+        return salary * 2;
+      }
+    }
+
+    // 方案二:
+    let performanceS = function(salary) {
+      return salary * 4;
+    }
+    let performanceA = function(salary) {
+      return salary * 3;
+    }
+    let performanceB = function(salary) {
+      return salary * 2;
+    }
+    let calculateBonus1 = function(performanceLevel, salary) {
+      if (performanceLevel === 'S') {
+        return performanceS(salary);
+      }
+      if (performanceLevel === 'A') {
+        return performanceA(salary);
+      }
+      if (performanceLevel === 'B') {
+        return performanceB(salary);
+      }
+    }
+
+    // 方案三:
+    let performanceS1 = function() {}
+    performanceS1.prototype.calculate = function(salary) {
+      return salary * 4
+    }
+
+    let performanceA1 = function() {}
+    performanceA1.prototype.calculate = function(salary) {
+      return salary * 3
+    }
+    
+    let performanceB1 = function() {}
+    performanceB1.prototype.calculate = function(salary) {
+      return salary * 2
+    }
+    
+    let Bonus = function() {
+      this.salary = null;
+      this.strategy = null;
+    }
+
+    // 赋值
+    Bonus.prototype.setSalary = function(salary) {
+      this.salary = salary;
+    }
+
+    Bonus.prototype.setStrategy = function(strategy) {
+      this.strategy = strategy;
+    }
+    
+    // 计算
+    Bonus.prototype.getBonus = function() {
+      return this.strategy.calculate(this.salary);
+    }
+
+    var bonus = new Bonus();
+    bonus.setSalary(20000);
+    bonus.setStrategy(new performanceS1());
+    console.log(bonus.getBonus());
+
+    // 方案四:
+    const bonusObj = {
+      S: function(salary) {
+        return salary * 4
+      },
+      A: function(salary) {
+        return salary * 3
+      },
+      B: function(salary) {
+        return salary * 2
+      }          
+    }
+
+    console.log(bonusObj['S'](20000));
+  </script>
+</body>
+</html>
